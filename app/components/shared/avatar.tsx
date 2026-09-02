@@ -45,7 +45,6 @@ export function Avatar({ name, src, size = 96, ringWidth = 3, className = "" }: 
       style={{ width: size, height: size, padding: ringWidth }}
     >
       {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={name}
@@ -53,7 +52,7 @@ export function Avatar({ name, src, size = 96, ringWidth = 3, className = "" }: 
           onError={() => setFailed(true)}
         />
       ) : (
-        <div className="grid h-full w-full place-items-center rounded-full bg-[#171d24] text-sm font-semibold text-white">
+        <div className="grid h-full w-full place-items-center rounded-full bg-[#1e1e1e] text-sm font-semibold text-white">
           {initialsFor(name)}
         </div>
       )}

@@ -75,7 +75,7 @@ export function Modal({ open, onClose, title, children, widthClassName = "max-w-
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`relative w-full ${widthClassName} rounded-3xl border border-white/10 bg-[#171d24] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)] animate-[modalIn_0.18s_ease-out]`}
+        className={`relative w-full ${widthClassName} rounded-3xl bg-[#1e1e1e] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)] animate-[modalIn_0.18s_ease-out]`}
       >
         <div className="mb-6 flex items-center justify-between">
           <h2 id={titleId} className="text-lg font-semibold text-white">

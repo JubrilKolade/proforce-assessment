@@ -15,6 +15,7 @@ export default function Home() {
   const { data: users = [], isLoading, isFetching, isError, refetch } = useGetUsersQuery();
 
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -26,54 +27,58 @@ export default function Home() {
   }, [users, search]);
 
   return (
-    <main className="min-h-screen bg-[#0a0d12] px-0 py-0 text-white sm:px-6 sm:py-6">
-      <div className="mx-auto flex h-screen max-w-[1300px] overflow-hidden border border-white/10 bg-[#11161d] shadow-[0_20px_80px_rgba(0,0,0,0.5)] sm:h-[calc(100vh-3rem)] sm:rounded-[28px]">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="flex h-screen w-screen overflow-hidden bg-[#121212] text-white">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <section className="flex min-w-0 flex-1 flex-col bg-[#131a22]">
-          <Header onMenuClick={() => setSidebarOpen((prev) => !prev)} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Header onMenuClick={() => setSidebarOpen((prev) => !prev)} />
 
-          <div className="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-5 sm:px-8 sm:pb-8">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  User directory
-                </h1>
-                <p className="mt-2 text-sm text-zinc-400">Find a list of users below</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsAddOpen(true)}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a212b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#202a34]"
-              >
-                <PlusIcon className="h-4 w-4" />
-                Add new
-              </button>
+        <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-6 sm:px-8 sm:pt-8 lg:px-10">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                User directory
+              </h1>
+              <p className="mt-2 text-sm text-zinc-400">Find a list of users below</p>
             </div>
 
-            <SearchUsers value={search} onChange={setSearch} />
-
-            <UserGrid
-              users={filteredUsers}
-              isLoading={isLoading}
-              isError={isError}
-              isSearching={search.trim().length > 0}
-              onSelect={setSelectedUser}
-              onRetry={refetch}
-            />
-
-            {isFetching && !isLoading && (
-              <p className="mt-3 text-center text-xs text-zinc-500" role="status">
-                Refreshing…
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={() => setIsAddOpen(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-[#121212] transition hover:bg-zinc-200"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Add new
+            </button>
           </div>
-        </section>
+
+          <SearchUsers
+            value={search}
+            onChange={setSearch}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+          />
+
+          <UserGrid
+            users={filteredUsers}
+            isLoading={isLoading}
+            isError={isError}
+            isSearching={search.trim().length > 0}
+            viewMode={viewMode}
+            onSelect={setSelectedUser}
+            onRetry={refetch}
+          />
+
+          {isFetching && !isLoading && (
+            <p className="mt-3 text-center text-xs text-zinc-500" role="status">
+              Refreshing…
+            </p>
+          )}
+        </main>
       </div>
 
       <AddUserModal open={isAddOpen} onClose={() => setIsAddOpen(false)} />
       <UserDetailsModal user={selectedUser} onClose={() => setSelectedUser(null)} />
-    </main>
+    </div>
   );
 }

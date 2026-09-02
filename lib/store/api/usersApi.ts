@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { CreateUserPayload, User } from "@/lib/types/user";
 
-const API_BASE_URL = "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const usersApi = createApi({
   reducerPath: "usersApi",

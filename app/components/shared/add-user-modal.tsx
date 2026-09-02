@@ -4,8 +4,6 @@ import { useState, type FormEvent } from "react";
 import { Modal } from "@/app/components/shared/modal";
 import { useCreateUserMutation } from "@/lib/store/api/usersApi";
 
-const DOB_PATTERN = /^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-
 type AddUserModalProps = {
   open: boolean;
   onClose: () => void;
@@ -24,7 +22,7 @@ export function AddUserModal({ open, onClose }: AddUserModalProps) {
   const [touched, setTouched] = useState(false);
   const [createUser, { isLoading, error }] = useCreateUserMutation();
 
-  const dobValid = form.dob === "" || DOB_PATTERN.test(form.dob);
+  const dobValid = form.dob === "" || !Number.isNaN(Date.parse(form.dob));
   const isComplete = form.name.trim() !== "" && form.location.trim() !== "" && form.dob.trim() !== "";
   const canSubmit = isComplete && dobValid && !isLoading;
 
@@ -62,7 +60,7 @@ export function AddUserModal({ open, onClose }: AddUserModalProps) {
             placeholder="E.g John"
             value={form.name}
             onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-            className="w-full rounded-xl border border-white/10 bg-[#1a212b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/25 focus:outline-none"
+            className="w-full rounded-xl bg-[#2a2a2a] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20"
           />
         </Field>
 
@@ -74,24 +72,23 @@ export function AddUserModal({ open, onClose }: AddUserModalProps) {
             placeholder="E.g Boston, USA"
             value={form.location}
             onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-            className="w-full rounded-xl border border-white/10 bg-[#1a212b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/25 focus:outline-none"
+            className="w-full rounded-xl bg-[#2a2a2a] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20"
           />
         </Field>
 
         <Field
           label="Date of Birth"
           htmlFor="user-dob"
-          error={touched && form.dob && !dobValid ? "Use the format DD/MM/YYYY" : undefined}
+          error={touched && form.dob && !dobValid ? "Please choose a valid date." : undefined}
         >
           <input
             id="user-dob"
             name="dob"
-            type="text"
-            inputMode="numeric"
-            placeholder="E.g 20/04/1945"
+            type="date"
+            placeholder="Select date"
             value={form.dob}
             onChange={(event) => setForm((prev) => ({ ...prev, dob: event.target.value }))}
-            className="w-full rounded-xl border border-white/10 bg-[#1a212b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-white/25 focus:outline-none"
+            className="w-full rounded-xl bg-[#2a2a2a] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20"
           />
         </Field>
 
@@ -108,7 +105,7 @@ export function AddUserModal({ open, onClose }: AddUserModalProps) {
             "w-full rounded-xl px-4 py-3 text-sm font-semibold transition",
             canSubmit
               ? "bg-white text-[#0d1117] hover:bg-zinc-200"
-              : "cursor-not-allowed bg-[#232a34] text-zinc-500",
+              : "cursor-not-allowed bg-[#2a2a2a] text-zinc-500",
           ].join(" ")}
         >
           {isLoading ? "Saving…" : "Save"}
