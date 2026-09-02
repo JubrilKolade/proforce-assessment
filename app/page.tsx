@@ -1,125 +1,79 @@
-import { Header } from "./components/shared/header";
-import { Sidebar } from "./components/shared/sidebar";
-import { UserCard } from "./components/shared/user-card";
+"use client";
 
-const users = [
-  {
-    name: "Alex Morgan",
-    email: "alex.morgan@company.com",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#f1d08a] via-[#d98c4a] to-[#7d4b2d]",
-  },
-  {
-    name: "Jordan Lee",
-    email: "jordan.lee@company.com",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#f7c4b3] via-[#d8a695] to-[#7a5f74]",
-  },
-  {
-    name: "Alex Morgan",
-    email: "alex.morgan@company.com",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#7de8d4] via-[#4ca4bb] to-[#2f5d7d]",
-  },
-  {
-    name: "Taylor Smith",
-    email: "taylor.smith@company.com",
-    image:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#ffd088] via-[#f59e6a] to-[#af5a45]",
-  },
-  {
-    name: "Morgan Riley",
-    email: "morgan.riley@company.com",
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#c0f5d7] via-[#7cc2b8] to-[#4e7d7c]",
-  },
-  {
-    name: "Jamie Wilson",
-    email: "jamie.wilson@company.com",
-    image:
-      "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#e2d5ff] via-[#a67dcf] to-[#5b4d7d]",
-  },
-  {
-    name: "Jamie Wilson",
-    email: "jamie.wilson@company.com",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#9fe7cf] via-[#52b9bb] to-[#2d5967]",
-  },
-  {
-    name: "Avery Thomas",
-    email: "avery.thomas@company.com",
-    image:
-      "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#f9d8b5] via-[#db8d5e] to-[#755e7b]",
-  },
-  {
-    name: "Alex Morgan",
-    email: "alex.morgan@company.com",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-    accent: "from-[#bba7ff] via-[#7d7dd9] to-[#3f4c8a]",
-  },
-];
+import { useMemo, useState } from "react";
+import { Header } from "@/app/components/shared/header";
+import { Sidebar } from "@/app/components/shared/sidebar";
+import { SearchUsers } from "@/app/components/shared/search-user";
+import { UserGrid } from "@/app/components/shared/user-grid";
+import { AddUserModal } from "@/app/components/shared/add-user-modal";
+import { UserDetailsModal } from "@/app/components/shared/user-details-modal";
+import { PlusIcon } from "@/app/components/icons";
+import { useGetUsersQuery } from "@/lib/store/api/usersApi";
+import type { User } from "@/lib/types/user";
 
 export default function Home() {
+  const { data: users = [], isLoading, isFetching, isError, refetch } = useGetUsersQuery();
+
+  const [search, setSearch] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const filteredUsers = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return users;
+    return users.filter((user) => user.name.toLowerCase().includes(query));
+  }, [users, search]);
+
   return (
-    <main className="min-h-screen bg-[#0a0d12] px-6 py-6 text-white">
-      <div className="mx-auto flex h-[calc(100vh-3rem)] max-w-[1300px] overflow-hidden rounded-[28px] border border-white/10 bg-[#11161d] shadow-[0_20px_80px_rgba(0,0,0,0.5)]">
-        <Sidebar />
+    <main className="min-h-screen bg-[#0a0d12] px-0 py-0 text-white sm:px-6 sm:py-6">
+      <div className="mx-auto flex h-screen max-w-[1300px] overflow-hidden border border-white/10 bg-[#11161d] shadow-[0_20px_80px_rgba(0,0,0,0.5)] sm:h-[calc(100vh-3rem)] sm:rounded-[28px]">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <section className="flex min-w-0 flex-1 flex-col bg-[#131a22]">
-          <Header />
+          <Header onMenuClick={() => setSidebarOpen((prev) => !prev)} />
 
-          <div className="flex-1 overflow-y-auto px-8 pb-8 pt-5">
-            <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="flex min-h-0 flex-1 flex-col px-4 pb-6 pt-5 sm:px-8 sm:pb-8">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h1 className="text-4xl font-semibold tracking-tight text-white">
+                <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                   User directory
                 </h1>
-                <p className="mt-2 text-sm text-zinc-400">Find a lot of users below</p>
+                <p className="mt-2 text-sm text-zinc-400">Find a list of users below</p>
               </div>
 
-              <button className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a212b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#202a34]">
-                <span className="text-lg leading-none">+</span>
+              <button
+                type="button"
+                onClick={() => setIsAddOpen(true)}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a212b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#202a34]"
+              >
+                <PlusIcon className="h-4 w-4" />
                 Add new
               </button>
             </div>
 
-            <div className="mb-6 flex w-full max-w-[360px] items-center gap-3 rounded-xl border border-white/10 bg-[#191e26] px-4 py-3 text-sm text-zinc-400 shadow-inner shadow-black/20">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="h-4 w-4"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="6" />
-                <path d="m16 16 5 5" />
-              </svg>
-              <input
-                aria-label="Search user by name"
-                placeholder="Search user by name"
-                className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none"
-              />
-            </div>
+            <SearchUsers value={search} onChange={setSearch} />
 
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {users.map((user, index) => (
-                <UserCard key={`${user.name}-${index}`} {...user} />
-              ))}
-            </div>
+            <UserGrid
+              users={filteredUsers}
+              isLoading={isLoading}
+              isError={isError}
+              isSearching={search.trim().length > 0}
+              onSelect={setSelectedUser}
+              onRetry={refetch}
+            />
+
+            {isFetching && !isLoading && (
+              <p className="mt-3 text-center text-xs text-zinc-500" role="status">
+                Refreshing…
+              </p>
+            )}
           </div>
         </section>
       </div>
+
+      <AddUserModal open={isAddOpen} onClose={() => setIsAddOpen(false)} />
+      <UserDetailsModal user={selectedUser} onClose={() => setSelectedUser(null)} />
     </main>
   );
 }
-

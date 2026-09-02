@@ -1,3 +1,5 @@
+"use client";
+
 const sidebarLinks = [
   { id: 1, name: "Dashboard", href: "/dashboard", icon: "grid" },
   { id: 2, name: "Users", href: "/users", icon: "users", active: true },
@@ -59,35 +61,58 @@ function Icon({ type }: { type: string }) {
   );
 }
 
-export function Sidebar() {
-  return (
-    <aside className="flex w-[220px] flex-col border-r border-white/10 bg-[#0d1218] px-4 py-5">
-      <div className="mb-8 flex items-center gap-3 px-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#1D2530] text-sm font-bold text-white">
-          u
-        </div>
-        <span className="text-lg font-semibold tracking-tight text-white">useID</span>
-      </div>
+type SidebarProps = {
+  open: boolean;
+  onClose: () => void;
+};
 
-      <nav className="mt-2 space-y-1">
-        {sidebarLinks.map((link) => (
-          <a
-            key={link.id}
-            href={link.href}
-            className={[
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
-              link.active
-                ? "bg-[#1b2430] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-                : "text-zinc-400 hover:bg-[#121a23] hover:text-zinc-200",
-            ].join(" ")}
-          >
-            <span className={link.active ? "text-[#9ee7d3]" : "text-zinc-500"}>
-              <Icon type={link.icon} />
-            </span>
-            {link.name}
-          </a>
-        ))}
-      </nav>
-    </aside>
+export function Sidebar({ open, onClose }: SidebarProps) {
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={[
+          "flex w-[220px] shrink-0 flex-col border-r border-white/10 bg-[#0d1218] px-4 py-5 transition-transform duration-200",
+          "fixed inset-y-0 left-0 z-40 md:static md:z-auto md:translate-x-0",
+          open ? "translate-x-0" : "-translate-x-full",
+        ].join(" ")}
+      >
+        <div className="mb-8 flex items-center gap-3 px-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#1D2530] text-sm font-bold text-white">
+            u
+          </div>
+          <span className="text-lg font-semibold tracking-tight text-white">useID</span>
+        </div>
+
+        <nav className="mt-2 space-y-1">
+          {sidebarLinks.map((link) => (
+            <a
+              key={link.id}
+              href={link.href}
+              onClick={onClose}
+              className={[
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                link.active
+                  ? "bg-[#1b2430] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
+                  : "text-zinc-400 hover:bg-[#121a23] hover:text-zinc-200",
+              ].join(" ")}
+            >
+              <span className={link.active ? "text-[#9ee7d3]" : "text-zinc-500"}>
+                <Icon type={link.icon} />
+              </span>
+              {link.name}
+            </a>
+          ))}
+        </nav>
+      </aside>
+    </>
   );
 }
